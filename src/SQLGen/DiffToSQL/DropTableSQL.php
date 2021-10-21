@@ -18,7 +18,7 @@ class DropTableSQL implements SQLGenInterface {
         $table = $this->obj->table;
         $connection = $this->obj->connection;
         $res = $connection->select("SHOW CREATE TABLE `$table`");
-        return $res[0]['Create Table'].';';
+        return $res[0]->{"Create Table"}.';';
     }
 
 }
