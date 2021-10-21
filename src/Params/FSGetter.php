@@ -40,6 +40,9 @@ class FSGetter implements ParamsGetter {
             if (file_exists(getcwd() . '/.dbdiff')) {
                 $configFile = getcwd() . '/.dbdiff';
             }
+            if (file_exists(getcwd() . '/..' . '/.dbdiff')) {
+                $configFile = getcwd() . '/..' . '/.dbdiff';
+            }
         }
 
         return $configFile;
