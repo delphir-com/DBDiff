@@ -9,14 +9,21 @@ use DBDiff\Templater;
 
 
 class DBDiff {
-    
+    public function setSourceTable($table) {
+        $this->source_table = $table;
+        return $this;
+    }
+    public function setTargetTable($table) {
+        $this->target_table = $table;
+        return $this;
+    }
     public function run() {
 
         // Increase memory limit
         ini_set('memory_limit', '512M');
 
         try {
-            $params = ParamsFactory::get();
+            $params = ParamsFactory::get($this->target_table, $this->source_table);
 
             // Diff
             $diffCalculator = new DiffCalculator;

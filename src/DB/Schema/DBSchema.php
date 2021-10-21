@@ -17,9 +17,7 @@ class DBSchema {
         $this->manager = $manager;
     }
     
-    function getDiff() {
-        $params = ParamsFactory::get();
-
+    function getDiff($params) {
         $diffs = [];
 
         // Collation

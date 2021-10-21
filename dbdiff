@@ -8,4 +8,5 @@ if (file_exists(__DIR__ . '/../../autoload.php')) {
 }
 
 $dbdiff = new DBDiff\DBDiff;
-$res = $dbdiff->run();
+$res = $dbdiff->setSourceTable('hyatt')->setTargetTable('hyatt1')->run();
+var_dump($res);

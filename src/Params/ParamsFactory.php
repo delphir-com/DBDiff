@@ -5,12 +5,12 @@ use DBDiff\Exceptions\CLIException;
 
 class ParamsFactory {
     
-    public static function get() {
+    public static function get($target_table, $source_table) {
         
         $params = new DefaultParams;
 
         $cli = new CLIGetter;
-        $paramsCLI = $cli->getParams();
+        $paramsCLI = $cli->setSourceTable($source_table)->setTargetTable($target_table)->getParams();
 
         if (!isset($paramsCLI->debug)) {
             error_reporting(E_ERROR);
