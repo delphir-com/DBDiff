@@ -1,26 +1,27 @@
 <?php namespace DBDiff\DB\Schema;
 
+use DBDiff\Logger;
 use Diff\Differ\MapDiffer;
+
 use Diff\Differ\ListDiffer;
-
-use DBDiff\Diff\AlterTableEngine;
-use DBDiff\Diff\AlterTableCollation;
-
-use DBDiff\Diff\AlterTableAddColumn;
-use DBDiff\Diff\AlterTableChangeColumn;
-use DBDiff\Diff\AlterTableDropColumn;
-
-use DBDiff\Diff\AlterTableAddKey;
-use DBDiff\Diff\AlterTableChangeKey;
-use DBDiff\Diff\AlterTableDropKey;
-
-use DBDiff\Diff\AlterTableAddConstraint;
-use DBDiff\Diff\AlterTableChangeConstraint;
-use DBDiff\Diff\AlterTableDropConstraint;
+use Illuminate\Support\Str;
 
 use DBDiff\SQLGen\Schema\SQL;
+use DBDiff\Diff\AlterTableAddKey;
+use DBDiff\Diff\AlterTableEngine;
 
-use DBDiff\Logger;
+use DBDiff\Diff\AlterTableDropKey;
+use DBDiff\Diff\AlterTableAddColumn;
+use DBDiff\Diff\AlterTableChangeKey;
+
+use DBDiff\Diff\AlterTableCollation;
+use DBDiff\Diff\AlterTableDropColumn;
+use DBDiff\Diff\AlterTableChangeColumn;
+
+use DBDiff\Diff\AlterTableAddConstraint;
+
+use DBDiff\Diff\AlterTableDropConstraint;
+use DBDiff\Diff\AlterTableChangeConstraint;
 
 
 class TableSchema {
@@ -34,10 +35,10 @@ class TableSchema {
     public function getSchema($connection, $table) {
         // collation & engine
         $status = $this->{$connection}->select("show table status like '$table'");
-        $engine = $status[0]['Engine'];
-        $collation = $status[0]['Collation'];
+        $engine = $status[0]->Engine;
+        $collation = $status[0]->Collation;
         
-        $schema = $this->{$connection}->select("SHOW CREATE TABLE `$table`")[0]['Create Table'];
+        $schema = $this->{$connection}->select("SHOW CREATE TABLE `$table`")[0]->{"Create Table"};
         $lines = array_map(function($el) { return trim($el);}, explode("\n", $schema));
         $lines = array_slice($lines, 1, -1);
         
@@ -49,9 +50,9 @@ class TableSchema {
             preg_match("/`([^`]+)`/", $line, $matches);
             $name = $matches[1];
             $line = trim($line, ',');
-            if (starts_with($line, '`')) { // column
+            if (Str::startsWith($line, '`')) { // column
                 $columns[$name] = $line;
-            } else if (starts_with($line, 'CONSTRAINT')) { // constraint
+            } else if (Str::startsWith($line, 'CONSTRAINT')) { // constraint
                 $constraints[$name] = $line;
             } else { // keys
                 $keys[$name] = $line;
@@ -68,8 +69,6 @@ class TableSchema {
     }
 
     public function getDiff($table) {
-        Logger::info("Now calculating schema diff for table `$table`");
-        
         $diffSequence = [];
         $sourceSchema = $this->getSchema('source', $table);
         $targetSchema = $this->getSchema('target', $table);

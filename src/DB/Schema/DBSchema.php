@@ -69,7 +69,7 @@ class DBSchema {
 
     protected function getDBVariable($connection, $var) {
         $result = $this->manager->getDB($connection)->select("show variables like '$var'");
-        return $result[0]['Value'];
+        return $result[0]->Values;
     }
 
 }

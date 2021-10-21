@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Capsule\Manager as Capsule;
 use DBDiff\Exceptions\DBException;
-
+use Illuminate\Support\Arr;
 
 class DBManager {
 
@@ -54,12 +54,16 @@ class DBManager {
 
     public function getTables($connection) {
         $result = $this->getDB($connection)->select("show tables");
-        return array_flatten($result);
+        return array_map(function($obj) {
+            foreach ($obj as $table_name) {
+                return $table_name;
+            }
+        }, $result);
     }
 
     public function getColumns($connection, $table) {
         $result = $this->getDB($connection)->select("show columns from `$table`");
-        return array_pluck($result, 'Field');
+        return $result;
     }
 
     public function getKey($connection, $table) {

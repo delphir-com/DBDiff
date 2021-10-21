@@ -24,32 +24,23 @@ class DBDiff {
 
             // Empty diff
             if (empty($diff['schema']) && empty($diff['data'])) {
-                Logger::info("Identical resources");
-            } else {
-                // SQL
-                $sqlGenerator = new SQLGenerator($diff);
-                $up =''; $down = '';
-                if ($params->include !== 'down') {
-                    $up = $sqlGenerator->getUp();
-                }
-                if ($params->include !== 'up') {
-                    $down = $sqlGenerator->getDown();
-                }
-
-                // Generate
-                $templater = new Templater($params, $up, $down);
-                $templater->output();
+                return;
+            }
+            // SQL
+            $sqlGenerator = new SQLGenerator($diff);
+            $up =''; $down = '';
+            if ($params->include !== 'down') {
+                $up = $sqlGenerator->getUp();
+            }
+            if ($params->include !== 'up') {
+                $down = $sqlGenerator->getDown();
             }
 
-            Logger::success("Completed");
-
+            // Generate
+            $templater = new Templater($params, $up, $down);
+            return $templater->output();
         } catch (\Exception $e) {
-            if ($e instanceof BaseException) {
-                Logger::error($e->getMessage(), true);
-            } else {
-                Logger::error("Unexpected error: " . $e->getMessage());
-                throw $e;
-            }
+            throw $e;
         }
 
     }

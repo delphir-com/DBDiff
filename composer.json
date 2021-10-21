@@ -11,9 +11,9 @@
     "require": {
         "aura/cli": "2.*@dev",
         "symfony/yaml": "2.8.*@dev",
-        "illuminate/database": "4.*",
-        "illuminate/view": "4.*",
-        "illuminate/container": "4.*",
+        "illuminate/database": "5.8.*",
+        "illuminate/view": "5.8.*",
+        "illuminate/container": "5.8.*",
         "diff/diff": "2.0.*@dev"
     },
     "require-dev": {

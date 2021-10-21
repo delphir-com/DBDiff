@@ -15,13 +15,7 @@ class Templater {
     public function output() {
         $content = $this->getComments();
         $content .= $this->getContent();
-        if (is_null($this->params->output)) {
-            Logger::info("Writing migration file to ".getcwd()."/migration.sql");
-            file_put_contents('migration.sql', $content);
-        } else {
-            Logger::info("Writing migration file to ".$this->params->output);
-            return file_put_contents($this->params->output, $content);
-        }
+        return $content;
     }
 
     private function getComments() {
@@ -32,21 +26,7 @@ class Templater {
     }
 
     private function getContent() {
-        $compiler = new BladeCompiler(new Filesystem, ".");
-        $template = $this->getTemplate();
-        $compiled = $compiler->compileString(' ?>'.$template);
         $up = trim($this->up, "\n");
-        $down = trim($this->down, "\n");
-        ob_start();
-        eval($compiled);
-        $content = ob_get_contents();
-        ob_end_clean();
-        return $content;
-    }
-
-    private function getTemplate() {
-        if (file_exists($this->params->template))
-            return file_get_contents($this->params->template);
-        return "#---------- UP ----------\n{{\$up}}\n#---------- DOWN ----------\n{{\$down}}";
+        return $up;
     }
 }

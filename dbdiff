@@ -8,4 +8,4 @@ if (file_exists(__DIR__ . '/../../autoload.php')) {
 }
 
 $dbdiff = new DBDiff\DBDiff;
-$dbdiff->run();
+$res = $dbdiff->run();
