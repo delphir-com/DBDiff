@@ -21,21 +21,17 @@ class FSGetter implements ParamsGetter {
 
     public function getParams() {
         $params = new \StdClass;
-        $configFile = $this->getFile();
-
-        if ($configFile) {
-            try {
-                $config['server1'] = $this->targetDB;
-                $config['server2'] = $this->sourceDB;
-                $config['type'] = 'schema';
-                $config['include'] = 'up';
-                $config['nocomments'] = true;
-                foreach ($config as $key => $value) {
-                    $this->setIn($params, $key, $value);
-                }
-            } catch (Exceptions $e) {
-                throw new FSException("Error parsing config file");
+        try {
+            $config['server1'] = $this->targetDB;
+            $config['server2'] = $this->sourceDB;
+            $config['type'] = 'schema';
+            $config['include'] = 'up';
+            $config['nocomments'] = true;
+            foreach ($config as $key => $value) {
+                $this->setIn($params, $key, $value);
             }
+        } catch (Exceptions $e) {
+            throw new FSException("Error parsing config file");
         }
         
         return $params;
