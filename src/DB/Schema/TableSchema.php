@@ -36,8 +36,8 @@ class TableSchema {
         // collation & engine
         $status = $this->{$connection}->select("show table status like '$table'");
         $engine = $status[0]->Engine;
-        $collation = $status[0]->Collation;
-        
+        // $collation = $status[0]->Collation;
+
         $schema = $this->{$connection}->select("SHOW CREATE TABLE `$table`")[0]->{"Create Table"};
         $lines = array_map(function($el) { return trim($el);}, explode("\n", $schema));
         $lines = array_slice($lines, 1, -1);
@@ -61,7 +61,7 @@ class TableSchema {
 
         return [
             'engine'      => $engine,
-            'collation'   => $collation,
+            // 'collation'   => $collation,
             'columns'     => $columns,
             'keys'        => $keys,
             'constraints' => $constraints
@@ -80,16 +80,32 @@ class TableSchema {
             $diffSequence[] = new AlterTableEngine($table, $sourceEngine, $targetEngine);
         }
 
-        // Collation
-        $sourceCollation = $sourceSchema['collation'];
-        $targetCollation = $targetSchema['collation'];
-        if ($sourceCollation != $targetCollation) {
-            $diffSequence[] = new AlterTableCollation($table, $sourceCollation, $targetCollation);
-        }
+        // // Collation
+        // $sourceCollation = $sourceSchema['collation'];
+        // $targetCollation = $targetSchema['collation'];
+        // if ($sourceCollation != $targetCollation) {
+        //     $diffSequence[] = new AlterTableCollation($table, $sourceCollation, $targetCollation);
+        // }
 
         // Columns
         $sourceColumns = $sourceSchema['columns'];
+        array_walk($sourceColumns, function (&$column) {
+            $column = str_replace(' CHARACTER SET utf8mb4 COLLATE utf8mb4_bin', '', $column);
+            $column = str_replace(' CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci', '', $column);
+            $column = str_replace(' COLLATE utf8mb4_general_ci', '', $column);
+            $column = str_replace(' COLLATE utf8mb4_unicode_ci', '', $column);
+            $column = str_replace(' DEFAULT \'0000-00-00 00:00:00\'', '', $column);
+            $column = str_replace(' DEFAULT \'0000-00-00\'', '', $column);
+        });
         $targetColumns = $targetSchema['columns'];
+        array_walk($targetColumns, function (&$column) {
+            $column = str_replace(' CHARACTER SET utf8mb4 COLLATE utf8mb4_bin', '', $column);
+            $column = str_replace(' CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci', '', $column);
+            $column = str_replace(' COLLATE utf8mb4_general_ci', '', $column);
+            $column = str_replace(' COLLATE utf8mb4_unicode_ci', '', $column);
+            $column = str_replace(' DEFAULT \'0000-00-00 00:00:00\'', '', $column);
+            $column = str_replace(' DEFAULT \'0000-00-00\'', '', $column);
+        });
         $differ = new MapDiffer();
         $diffs = $differ->doDiff($targetColumns, $sourceColumns);
         foreach ($diffs as $column => $diff) {
@@ -105,6 +121,12 @@ class TableSchema {
         // Keys
         $sourceKeys = $sourceSchema['keys'];
         $targetKeys = $targetSchema['keys'];
+        array_walk($sourceKeys, function (&$key) {
+            $key = str_replace(' USING BTREE', '', $key);
+        });
+        array_walk($targetKeys, function (&$key) {
+            $key = str_replace(' USING BTREE', '', $key);
+        });
         $differ = new MapDiffer();
         $diffs = $differ->doDiff($targetKeys, $sourceKeys);
         foreach ($diffs as $key => $diff) {
