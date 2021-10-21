@@ -5,19 +5,19 @@ use DBDiff\Exceptions\CLIException;
 
 class ParamsFactory {
     
-    public static function get($target_table, $source_table) {
+    public static function get($targetDB, $sourceDB) {
         
         $params = new DefaultParams;
 
         $cli = new CLIGetter;
-        $paramsCLI = $cli->setSourceTable($source_table)->setTargetTable($target_table)->getParams();
+        $paramsCLI = $cli->setSourceDB($sourceDB)->setTargetDB($targetDB)->getParams();
 
         if (!isset($paramsCLI->debug)) {
             error_reporting(E_ERROR);
         }
 
         $fs = new FSGetter($paramsCLI);
-        $paramsFS = $fs->getParams();
+        $paramsFS = $fs->setSourceDB($sourceDB)->setTargetDB($targetDB)->getParams();
         $params = self::merge($params, $paramsFS);
 
         $params = self::merge($params, $paramsCLI);

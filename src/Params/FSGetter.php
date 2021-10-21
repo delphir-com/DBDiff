@@ -10,13 +10,26 @@ class FSGetter implements ParamsGetter {
         $this->params = $params;
     }
 
+    public function setSourceDB($db) {
+        $this->sourceDB = $db;
+        return $this;
+    }
+    public function setTargetDB($db) {
+        $this->targetDB = $db;
+        return $this;
+    }
+
     public function getParams() {
         $params = new \StdClass;
         $configFile = $this->getFile();
 
         if ($configFile) {
             try {
-                $config = Yaml::parse(file_get_contents($configFile));
+                $config['server1'] = $this->targetDB;
+                $config['server2'] = $this->sourceDB;
+                $config['type'] = 'schema';
+                $config['include'] = 'up';
+                $config['nocomments'] = true;
                 foreach ($config as $key => $value) {
                     $this->setIn($params, $key, $value);
                 }

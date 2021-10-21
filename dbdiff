@@ -8,5 +8,7 @@ if (file_exists(__DIR__ . '/../../autoload.php')) {
 }
 
 $dbdiff = new DBDiff\DBDiff;
-$res = $dbdiff->setSourceTable('hyatt')->setTargetTable('hyatt1')->run();
+$res = $dbdiff->setSourceDB(['user'=>'root','password'=>'123456','port'=>3306,'host'=>'127.0.0.1','db_name'=>'hyatt'])
+->setTargetDB(['user'=>'root','password'=>'123456','port'=>3306,'host'=>'127.0.0.1','db_name' => 'hyatt1'])
+->run();
 var_dump($res);

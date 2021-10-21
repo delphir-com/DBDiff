@@ -6,12 +6,12 @@ use Aura\Cli\Status;
 
 
 class CLIGetter implements ParamsGetter {
-    public function setSourceTable($table) {
-        $this->source_table = $table;
+    public function setSourceDB($db) {
+        $this->sourceDB = $db;
         return $this;
     }
-    public function setTargetTable($table) {
-        $this->target_table = $table;
+    public function setTargetDB($db) {
+        $this->targetDB = $db;
         return $this;
     }
 
@@ -27,7 +27,7 @@ class CLIGetter implements ParamsGetter {
             'template::', 'type::', 'include::',
             'nocomments::', 'config::', 'output::', 'debug::'
         ]);
-        $params->input = $this->parseInput('server1.'.$this->target_table.':'.'server2.'.$this->source_table);
+        $params->input = $this->parseInput('server1.'.$this->targetDB['db_name'].':'.'server2.'.$this->sourceDB['db_name']);
         if ($getopt->get('--server1'))
             $params->server1 = $this->parseServer($getopt->get('--server1'));
         if ($getopt->get('--server2'))
